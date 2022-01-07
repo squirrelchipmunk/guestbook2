@@ -23,17 +23,16 @@ public class GuestbookController extends HttpServlet {
 		String action = request.getParameter("action");
 		
 		System.out.println(action);
-		request.setCharacterEncoding("UTF-8");
 		
 		if("addList".equals(action)) {
 			GuestBookDao dao = new GuestBookDao();
 			List<GuestBookVo> guestBookList = dao.getGuestBookList();
-
 			request.setAttribute("gList", guestBookList);
-			// 포워드 
+			
 			RequestDispatcher rd = request.getRequestDispatcher("WEB-INF/addList.jsp");
 			rd.forward(request, response);
 		}
+		
 	    else if("deleteForm".equals(action)) {
 	    	int no = Integer.parseInt(request.getParameter("no"));
 	    	request.setAttribute("no", no);
@@ -43,22 +42,21 @@ public class GuestbookController extends HttpServlet {
 		}
 		
 		else if("add".equals(action)) {
-			request.setCharacterEncoding("UTF-8");
 			String name = request.getParameter("name");
 			String password= request.getParameter("password");
 			String content = request.getParameter("content");
-
-			System.out.println(name +" " + password+ " "+ content);
+			
 			GuestBookVo vo = new GuestBookVo(0, name, password, content, "");
 			new GuestBookDao().addGuestBook(vo);
+			
 			response.sendRedirect("/guestbook2/gbc?action=addList");
 		}
 		
 		else if("delete".equals(action)) {
 			int no = Integer.parseInt(request.getParameter("no"));
 			String password = request.getParameter("password");
-			GuestBookVo vo = new GuestBookVo(no, "", password, "", "");
 			
+			GuestBookVo vo = new GuestBookVo(no, "", password, "", "");
 			new GuestBookDao().deleteGuestBook(vo);
 			
 			response.sendRedirect("/guestbook2/gbc?action=addList");
@@ -70,6 +68,7 @@ public class GuestbookController extends HttpServlet {
 	}
 
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		request.setCharacterEncoding("utf-8"); 
 		doGet(request, response);
 	}
 
