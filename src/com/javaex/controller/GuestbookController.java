@@ -23,7 +23,7 @@ public class GuestbookController extends HttpServlet {
 		String action = request.getParameter("action");
 		
 		System.out.println(action);
-		
+		request.setCharacterEncoding("UTF-8");
 		
 		if("addList".equals(action)) {
 			GuestBookDao dao = new GuestBookDao();
@@ -55,9 +55,7 @@ public class GuestbookController extends HttpServlet {
 		}
 		
 		else if("delete".equals(action)) {
-			int no=0;
-			if(request.getParameter("no") != null)
-				no = Integer.parseInt(request.getParameter("no"));
+			int no = Integer.parseInt(request.getParameter("no"));
 			String password = request.getParameter("password");
 			GuestBookVo vo = new GuestBookVo(no, "", password, "", "");
 			
