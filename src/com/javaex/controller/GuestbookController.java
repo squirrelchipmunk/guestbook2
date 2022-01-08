@@ -19,52 +19,74 @@ public class GuestbookController extends HttpServlet {
     }
 
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		System.out.println("guestbook controller");
 		String action = request.getParameter("action");
+		String view = "";
 		
-		System.out.println(action);
-		
+		// 방명록 리스트
 		if("addList".equals(action)) {
 			GuestBookDao dao = new GuestBookDao();
 			List<GuestBookVo> guestBookList = dao.getGuestBookList();
 			request.setAttribute("gList", guestBookList);
 			
-			RequestDispatcher rd = request.getRequestDispatcher("WEB-INF/addList.jsp");
-			rd.forward(request, response);
+			view = "addList";
 		}
 		
+		// 방명록 삭제 화면 
 	    else if("deleteForm".equals(action)) {
 	    	int no = Integer.parseInt(request.getParameter("no"));
 	    	request.setAttribute("no", no);
 	    	
-			RequestDispatcher rd = request.getRequestDispatcher("WEB-INF/deleteForm.jsp");
-			rd.forward(request, response);
+	    	view = "deleteForm";
 		}
 		
+		// 방명록 추가 
 		else if("add".equals(action)) {
 			String name = request.getParameter("name");
 			String password= request.getParameter("password");
 			String content = request.getParameter("content");
-			
 			GuestBookVo vo = new GuestBookVo(0, name, password, content, "");
-			new GuestBookDao().addGuestBook(vo);
 			
-			response.sendRedirect("/guestbook2/gbc?action=addList");
+			// 빈칸 처리
+			try {
+				new GuestBookDao().addGuestBook(vo);
+				view = "redirect:addList";
+			}catch(Exception e) {
+				request.setAttribute("errorMessage", e.getMessage());
+				view="errorBack";
+			}
 		}
 		
+		// 방명록 삭제 
 		else if("delete".equals(action)) {
 			int no = Integer.parseInt(request.getParameter("no"));
 			String password = request.getParameter("password");
-			
 			GuestBookVo vo = new GuestBookVo(no, "", password, "", "");
-			new GuestBookDao().deleteGuestBook(vo);
 			
-			response.sendRedirect("/guestbook2/gbc?action=addList");
+			// 빈칸, 비밀번호 불일치 처리
+			try {
+				new GuestBookDao().deleteGuestBook(vo);
+				view = "redirect:addList";
+			}catch(Exception e) {
+				request.setAttribute("errorMessage", e.getMessage());
+				view="errorBack";
+			}
+			
 		}
 		
 		else
 			System.out.println("파라미터 없음");
-	    
+		
+		
+		// view >> redirect
+		if(view.startsWith("redirect")) {
+			response.sendRedirect("/guestbook2/gbc?action="+ view.substring(9));
+		}
+		// view >> forward
+		else {
+			RequestDispatcher rd = request.getRequestDispatcher("WEB-INF/"+view+".jsp");
+			rd.forward(request, response);
+		}
+		
 	}
 
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {

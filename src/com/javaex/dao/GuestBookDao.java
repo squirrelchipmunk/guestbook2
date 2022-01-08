@@ -46,8 +46,13 @@ public class GuestBookDao {
 		}
 	}
 	
-	public void addGuestBook(GuestBookVo vo) {
-
+	public void addGuestBook(GuestBookVo vo) throws Exception {
+		if(vo.getName() == null || vo.getName().length() <= 0 ||
+		   vo.getPassword() == null || vo.getPassword().length() <= 0 ||
+		   vo.getContent() == null || vo.getContent().length() <= 0) {
+			throw new Exception("모든 항목을 빈칸 없이 입력해주세요");
+		}
+		
 		try {
 			getConnection();
 
@@ -69,8 +74,11 @@ public class GuestBookDao {
 		close();
 	}
 	
-	public void deleteGuestBook(GuestBookVo vo) {
-
+	public void deleteGuestBook(GuestBookVo vo) throws Exception{
+		if(vo.getPassword() == null || vo.getPassword().length() <= 0) {
+			throw new Exception("비밀번호를 입력해주세요.");
+		}
+		
 		try {
 			getConnection();
 
@@ -82,12 +90,18 @@ public class GuestBookDao {
 			pstmt.setInt(1, vo.getNo());
 			pstmt.setString(2, vo.getPassword());
 			
-			int count = pstmt.executeUpdate();  
+			int count = pstmt.executeUpdate();
+			if(count <= 0) {
+				close();
+				throw new Exception("비밀번호가 일치하지 않습니다.");
+			}
+			
 			System.out.println("["+count + " 건이 삭제되었습니다.]");
 		} catch (SQLException e) {
 			System.out.println("error:" + e);
 		} 
 		
+
 		close();
 	}
 	
