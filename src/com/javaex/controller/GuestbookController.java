@@ -33,8 +33,6 @@ public class GuestbookController extends HttpServlet {
 		
 		// 방명록 삭제 화면 
 	    else if("deleteForm".equals(action)) {
-	    	int no = Integer.parseInt(request.getParameter("no"));
-	    	request.setAttribute("no", no);
 	    	
 	    	view = "deleteForm";
 		}

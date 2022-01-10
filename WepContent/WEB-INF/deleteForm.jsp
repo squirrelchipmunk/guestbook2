@@ -4,7 +4,7 @@
 <%@ page import = "com.javaex.dao.GuestBookDao" %>
     
 <%
-	int no = (int)request.getAttribute("no");
+	String no = request.getParameter("no");
 %>
     
 <!DOCTYPE html>
