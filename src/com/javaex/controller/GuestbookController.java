@@ -11,6 +11,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import com.javaex.dao.GuestBookDao;
+import com.javaex.util.WebUtil;
 import com.javaex.vo.GuestBookVo;
 
 @WebServlet("/gbc")
@@ -20,21 +21,10 @@ public class GuestbookController extends HttpServlet {
 
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		String action = request.getParameter("action");
-		String view = "";
-		
-		// 방명록 리스트
-		if("addList".equals(action)) {
-			GuestBookDao dao = new GuestBookDao();
-			List<GuestBookVo> guestBookList = dao.getGuestBookList();
-			request.setAttribute("gList", guestBookList);
-			
-			view = "addList";
-		}
 		
 		// 방명록 삭제 화면 
-	    else if("deleteForm".equals(action)) {
-	    	
-	    	view = "deleteForm";
+	    if("deleteForm".equals(action)) {
+	    	WebUtil.forward(request, response, "/WEB-INF/deleteForm.jsp");
 		}
 		
 		// 방명록 추가 
@@ -47,10 +37,10 @@ public class GuestbookController extends HttpServlet {
 			// 빈칸 처리
 			try {
 				new GuestBookDao().addGuestBook(vo);
-				view = "redirect:addList";
+				WebUtil.redirect(request, response, "/guestbook2/gbc");
 			}catch(Exception e) {
 				request.setAttribute("errorMessage", e.getMessage());
-				view="errorBack";
+				WebUtil.forward(request, response, "/WEB-INF/errorBack.jsp");
 			}
 		}
 		
@@ -63,27 +53,22 @@ public class GuestbookController extends HttpServlet {
 			// 빈칸, 비밀번호 불일치 처리
 			try {
 				new GuestBookDao().deleteGuestBook(vo);
-				view = "redirect:addList";
+				WebUtil.redirect(request, response, "/guestbook2/gbc");
 			}catch(Exception e) {
 				request.setAttribute("errorMessage", e.getMessage());
-				view="errorBack";
+				WebUtil.forward(request, response, "/WEB-INF/errorBack.jsp");
 			}
 			
 		}
-		
-		else
-			System.out.println("파라미터 없음");
-		
-		
-		// view >> redirect
-		if(view.startsWith("redirect")) {
-			response.sendRedirect("/guestbook2/gbc?action="+ view.substring(9));
-		}
-		// view >> forward
+	    // 방명록 리스트
 		else {
-			RequestDispatcher rd = request.getRequestDispatcher("WEB-INF/"+view+".jsp");
-			rd.forward(request, response);
+			GuestBookDao dao = new GuestBookDao();
+			List<GuestBookVo> guestBookList = dao.getGuestBookList();
+			request.setAttribute("gList", guestBookList);
+		
+			WebUtil.forward(request, response, "/WEB-INF/addList.jsp");
 		}
+		
 		
 	}
 

@@ -22,6 +22,6 @@
 		<input type="hidden" name="action" value="delete">
 	</form>
 	
-	<a href="/guestbook2/gbc?action=addList">메인으로 돌아가기</a>
+	<a href="/guestbook2/gbc">메인으로 돌아가기</a>
 </body>
 </html>
